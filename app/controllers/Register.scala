@@ -7,10 +7,10 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 object Register extends Controller {
 
-    /** GET / */
-  	def index = Action.async {
-	  val hello: Future[String] = Future { "Hello" }
-	  hello.map(s => Ok(s))
-	}
+  /** GET / */
+  def index = Action.async {
+    val hello: Future[String] = Future { "Hello" }
+    hello.map(s => Ok(s))
+  }
 
 }
