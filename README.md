@@ -21,6 +21,16 @@ This sample uses
 
 
 Misc
----------------
+--------------
 
 * Pretty good read on Play Actions and Async  https://groups.google.com/forum/#!topic/play-framework-dev/30MqnKDp0Fs
+
+
+Auth
+--------------
+
+* The authentication is rfc6749 4.4 lient Credentials Grant 
+* http://tools.ietf.org/html/rfc6749#section-4.4
+* Twitter's implementation is the model for this example
+* https://dev.twitter.com/docs/auth/application-only-auth
+
