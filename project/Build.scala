@@ -13,7 +13,8 @@ object ApplicationBuild extends Build {
     "com.typesafe.akka" %% "akka-actor" % "2.2.0",
     "com.typesafe.akka" %% "akka-slf4j" % "2.2.0",
     "org.webjars" % "webjars-play_2.10" % "2.2.0",
-    "com.typesafe.akka" %% "akka-testkit" % "2.2.0" % "test"
+    "com.typesafe.akka" %% "akka-testkit" % "2.2.0" % "test",
+    "commons-codec" % "commons-codec" % "1.8"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
