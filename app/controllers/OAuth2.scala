@@ -1,6 +1,7 @@
 package controllers
 
 import models._
+import util._
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -8,6 +9,7 @@ import play.api.mvc.Request
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
+import play.api.Logger
 
 /**
  * Based upon the spec and twitter's implementation
@@ -17,19 +19,27 @@ import play.api.libs.json._
 object OAuth2 extends Controller {
   
   /**
-   * https://dev.twitter.com/docs/api/1.1/post/oauth2/token
+   * Must be https encoded
+   * e.g. our model is https://dev.twitter.com/docs/api/1.1/post/oauth2/token
    * 
    * returns a token
    * {"token_type":"bearer","access_token":"ABCDEFGHIJKLMNOP"}
    */
   def postToken = Action { request =>
-    // Get headers 
+    // Get headers and verify (Secured wrapper to verify by client 
     // From json get: grant_type=client_credentials
-    Ok("""{"token_type":"bearer","access_token":"ABCDEFGHIJKLMNOP"}""")
+    //ConsumerCatalog.getConsumerByCredentials(cred)
+    val id: Long = 1L
+    val bearerToken = GeneratorUtil.generateBearerToken
+    ConsumerCatalog.tokens.put(id, Some(bearerToken))
+    val j = Json.obj("token_type" -> "bearer", "access_token" -> bearerToken).toString
+    Logger.info("postToken for id " + id + "  " + j)
+    Ok(j)
   }
   
   /**
-   * https://dev.twitter.com/docs/api/1.1/post/oauth2/invalidate_token
+   * Must be https encoded
+   * e.g. our model is https://dev.twitter.com/docs/api/1.1/post/oauth2/invalidate_token
    * 
    * Returns the revoked token
    * {"access_token":"ABCDEFGHIJKLMNOP"}
