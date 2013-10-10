@@ -71,6 +71,21 @@ object Consumer {
 object ConsumerCatalog {
    val consumers: scala.collection.mutable.Map[Long, Consumer] = scala.collection.mutable.Map((1L -> Consumer(1L, "Simulator Co.", "vcncb4TTuPPTEGLOSKIex", "L9yyTYyQg9ieKLOPhWolMNVvKUUw8iE7777777yOg")))
    val tokens: scala.collection.mutable.Map[Long, Option[String]] = scala.collection.mutable.Map((1L -> None))
+   
+   def getConsumerByCredentials(cred: String): Option[Consumer] = {
+     val filtered = consumers.values.filter(x => x.buildCredentials == cred)
+     filtered.size match {
+       case 0 => None
+       case _ => { filtered.headOption }
+     }
+   }
+   
+   def authenticateToken(t: String): Option[String] = {
+     tokens.values.exists(x => x.getOrElse("***") == t) match {
+       case false => None
+       case _ => { Some(t) }
+     }
+   }
 }
 
 
