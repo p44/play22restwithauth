@@ -16,38 +16,70 @@ import play.api.Logger
  * http://tools.ietf.org/html/rfc6749#section-4.4
  * https://dev.twitter.com/docs/auth/application-only-auth
  */
-object OAuth2 extends Controller {
-  
+object OAuth2 extends Controller with Secured {
+
   /**
    * Must be https encoded
    * e.g. our model is https://dev.twitter.com/docs/api/1.1/post/oauth2/token
-   * 
-   * returns a token
+   *
+   * Auth by Consumer credentials in the header using Basic auth.
+   * Returns a token
    * {"token_type":"bearer","access_token":"ABCDEFGHIJKLMNOP"}
    */
-  def postToken = Action { request =>
-    // Get headers and verify (Secured wrapper to verify by client 
-    // From json get: grant_type=client_credentials
-    //ConsumerCatalog.getConsumerByCredentials(cred)
-    val id: Long = 1L
-    val bearerToken = GeneratorUtil.generateBearerToken
-    ConsumerCatalog.tokens.put(id, Some(bearerToken))
-    val j = Json.obj("token_type" -> "bearer", "access_token" -> bearerToken).toString
-    Logger.info("postToken for id " + id + "  " + j)
-    Ok(j)
+  def postToken = withConsumerCredentialAuth { cred =>
+    { request =>
+      val oc = ConsumerCatalog.getConsumerByCredentials(cred)
+      oc.isDefined match {
+        case false => InternalServerError("Consumer lookup issues exist")
+        case true => {
+          val id: Long = oc.get.id
+          val bearerToken = GeneratorUtil.generateBearerToken
+          ConsumerCatalog.tokens.put(id, Some(bearerToken))
+          val j = Json.obj("token_type" -> "bearer", "access_token" -> bearerToken).toString
+          Logger.info("postToken for id " + id + "  " + j)
+          Ok(j)
+        }
+      }
+    }
   }
-  
+
   /**
    * Must be https encoded
    * e.g. our model is https://dev.twitter.com/docs/api/1.1/post/oauth2/invalidate_token
-   * 
+   *
+   * Auth by Consumer credentials in the header using Basic auth.
    * Returns the revoked token
    * {"access_token":"ABCDEFGHIJKLMNOP"}
    */
-  def postInvalidateToken = Action { request =>
-    // Get headers
-    // From json get: access_token=ABCDEFGHIJKLMNOP
-    Ok("""{"access_token":"ABCDEFGHIJKLMNOP"}""") // return the revoked token
+  def postInvalidateToken = withConsumerCredentialAuth { cred =>
+    { request =>
+      val oc = ConsumerCatalog.getConsumerByCredentials(cred)
+      oc.isDefined match {
+        case false => InternalServerError("Consumer lookup issues exist")
+        case true => {
+          val optJsonValue: Option[JsValue] = request.body.asJson
+          optJsonValue match {
+            case None => BadRequest("Could not resolve request body as json.  Do you have the 'Content-type' header set to 'application/json'? " + request.body)
+            case _ => {
+              val optToken: Option[String] = getTokenFromJson(optJsonValue.get)
+              optToken.isDefined match {
+                case false => BadRequest("Did not find a token to invalidate.  Did you set the json content for \"access_token\"? " + request.body)
+                case true => {
+                  val id: Long = oc.get.id
+                  ConsumerCatalog.tokens.put(id, None) // invalidate the token
+                  val j = Json.obj("access_token" -> optToken.get).toString
+                  Ok(j) // return the revoked token
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  def getTokenFromJson(jv: JsValue): Option[String] = {
+    (jv \ "access_token").asOpt[String]
   }
 
 }
