@@ -24,14 +24,13 @@ trait Secured {
       }
     }
   }
-  def authorizedBasicToken(request: RequestHeader): Option[String] = {
+  def authorizedConsumerCredential(request: RequestHeader): Option[String] = {
     val os = request.headers.get(AUTHORIZATION_KEY)
     os.isDefined match {
       case false => None
       case true => {
-        val ot: Option[String] = SecurityHelper.parseBasicToken(os.get)
-        // TODO authenticate
-        ot
+        val oCred: Option[String] = SecurityHelper.parseBasicToken(os.get)
+        ConsumerCatalog.authenticateConsumerCredential(oCred.getOrElse("NotACredential"))
       }
     }
   }
@@ -39,6 +38,12 @@ trait Secured {
   /** Action wrapper - Enforces valid bearer token in the header */
   def withBearerTokenAuth(f: => String => Request[AnyContent] => Result) = { 
     Security.Authenticated(authorizedBearerToken, onUnauthorized) { token =>
+      Action(request => f(token)(request))
+    }
+  }
+  /** Authorization: Basic eHZ6MWV2R ... o4OERSZHlPZw== */
+  def withConsumerCredentialAuth(f: => String => Request[AnyContent] => Result) = { 
+    Security.Authenticated(authorizedConsumerCredential, onUnauthorized) { token =>
       Action(request => f(token)(request))
     }
   }
