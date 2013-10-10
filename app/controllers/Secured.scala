@@ -10,31 +10,60 @@ import play.api.mvc.Result
 import play.api.mvc.AnyContent
 
 trait Secured {
-  
-  val AUTHORIZATION_TOKEN_KEY = "Authorization"
+
+  val AUTHORIZATION_KEY = "Authorization"
 
   def onUnauthorized(request: RequestHeader) = Unauthorized("Authorization Failure")
-  def authorizationBearerToken(request: RequestHeader): Option[String] = {
-    val os = request.headers.get(AUTHORIZATION_TOKEN_KEY)
+  def authorizedBearerToken(request: RequestHeader): Option[String] = {
+    val os = request.headers.get(AUTHORIZATION_KEY)
     os.isDefined match {
       case false => None
-      case true =>  os // TODO check the token for "Bearer ", strip and return token
+      case true => {
+        val ot: Option[String] = SecurityHelper.parseBearerToken(os.get)
+        ConsumerCatalog.authenticateToken(ot.getOrElse("NotAToken"))
+      }
     }
   }
-  def authorizationBasicToken(request: RequestHeader): Option[String] = {
-    request.headers.get(AUTHORIZATION_TOKEN_KEY)
-  }
-  def bearerTokenAthenticated(request: RequestHeader): Option[String] = {
-    val ot = authorizationBearerToken(request)
-    ot.isDefined match { // it exists in the header and is marked a bearer token
+  def authorizedBasicToken(request: RequestHeader): Option[String] = {
+    val os = request.headers.get(AUTHORIZATION_KEY)
+    os.isDefined match {
       case false => None
-      case _ => {
-        true match { // TODO check the data store for the token value
-          case false => None
-          case _ => ot
-        }
+      case true => {
+        val ot: Option[String] = SecurityHelper.parseBasicToken(os.get)
+        // TODO authenticate
+        ot
       }
     }
   }
   
+  /** Action wrapper - Enforces valid bearer token in the header */
+  def withBearerTokenAuth(f: => String => Request[AnyContent] => Result) = { 
+    Security.Authenticated(authorizedBearerToken, onUnauthorized) { token =>
+      Action(request => f(token)(request))
+    }
+  }
+
+}
+
+object SecurityHelper {
+
+  def parseBearerToken(authHeader: String): Option[String] = { parseAuthToken("bearer ", authHeader) }
+  def parseBasicToken(authHeader: String): Option[String] = { parseAuthToken("basic ", authHeader) }
+
+  def parseAuthToken(prefixLower: String, authHeader: String): Option[String] = {
+    val s = authHeader.trim
+    s.toLowerCase.contains(prefixLower) match { // e.g. "bearer "
+      case false => None
+      case true => { splitAuthToken(s) }
+    }
+  }
+
+  def splitAuthToken(s: String): Option[String] = {
+    val bt: Array[String] = s.split(" ")
+    bt.size > 0 match {
+      case true => Some(bt(1))
+      case _ => None
+    }
+  }
+
 }
