@@ -86,6 +86,13 @@ object ConsumerCatalog {
        case _ => { Some(t) }
      }
    }
+   
+   def authenticateConsumerCredential(cred: String): Option[String] = {
+     consumers.values.exists(x => x.buildCredentials == cred) match {
+       case false => None
+       case _ => { Some(cred) }
+     }
+   }
 }
 
 
