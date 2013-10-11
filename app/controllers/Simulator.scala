@@ -13,6 +13,10 @@ import play.api.libs.json._
  */
 object Simulator extends Controller {
   
+  def index = Action {
+    Ok(views.html.simulator.render)
+  }
+  
   /**
    * Simulated callback
    * PUT /simulator/mycallback
