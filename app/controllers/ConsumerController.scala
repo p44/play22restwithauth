@@ -17,5 +17,14 @@ object ConsumerController extends Controller {
   def postConsumer = Action { 
     Ok("Not Implemented")
   }
+  
+  /** Get the already created simulated consumer for simulation purposes */
+  def getConsumerSimulated = Action {
+    val oc: Option[Consumer] = ConsumerCatalog.consumers.get(1L)
+    oc.isDefined match {
+      case false => InternalServerError("The system failed to provide a simulated consumer")
+      case true => { Ok(oc.get.toGetJson) } // json without the key and secret
+    }
+  }
 
 }
