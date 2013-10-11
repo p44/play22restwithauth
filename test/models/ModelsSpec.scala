@@ -9,6 +9,11 @@ object ModelsSpec extends Specification {
   import util._
   
   "Models" should {
+    "Consumer" in {
+      val oc: Option[Consumer] = ConsumerCatalog.consumers.get(1L)
+      oc mustNotEqual None
+      oc.get.id mustEqual 1L
+    }
     "ConsumerCatalog.tokens" in {
       val bearerToken = GeneratorUtil.generateBearerToken
       ConsumerCatalog.tokens.put(99L, Some(bearerToken))
