@@ -13,6 +13,8 @@ object ApplicationBuild extends Build {
     "com.typesafe.akka" %% "akka-actor" % "2.2.0",
     "com.typesafe.akka" %% "akka-slf4j" % "2.2.0",
     "org.webjars" % "webjars-play_2.10" % "2.2.0",
+    "org.webjars" % "bootstrap" % "2.3.1",
+    "org.webjars" % "angularjs" % "1.1.5-1",
     "com.typesafe.akka" %% "akka-testkit" % "2.2.0" % "test",
     "commons-codec" % "commons-codec" % "1.8"
   )
