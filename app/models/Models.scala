@@ -55,6 +55,9 @@ Base64 encoded bearer token credentials:  eHZ6MWV2RlM0d0VFUFRHRUZQSEJvZzpMOHFxOV
 */
 case class Consumer(id: Long, name: String, key: String, secret: String) {
   def buildCredentials: String = Consumer.buildCredentialsFromKeySecret(key, secret)
+  /** don't show key secret */
+  def toGetJson: String = { Json.obj("id" -> id, "name" -> name).toString }
+    
 //  def buildCredentialsBase64: String = {
 //    //org.apache.commons.codec.binary.Base64.encodeBase64(x$1)
 //    getCredentials
@@ -63,7 +66,8 @@ case class Consumer(id: Long, name: String, key: String, secret: String) {
 object Consumer {
   def buildCredentials(consumer: Consumer): String = { buildCredentialsFromKeySecret(consumer.key, consumer.secret) }
   def buildCredentialsFromKeySecret(k: String, sec: String) = { k + " :" + sec }
-  def splitCredentials(cred: String) = { 
+  /** returns tuple (key, secret) */
+  def splitCredentials(cred: String): (String, String) = { 
     val sa = cred.split(":") 
     (sa(0), sa(1))
   }
