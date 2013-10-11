@@ -1,7 +1,5 @@
 package controllers
 
-package controllers
-
 import models._
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
@@ -18,7 +16,7 @@ object ConsumerController extends Controller {
     Ok("Not Implemented")
   }
   
-  /** Get the already created simulated consumer for simulation purposes */
+  /** Get the already created simulated consumer for simulation purposes - no security */
   def getConsumerSimulated = Action {
     val oc: Option[Consumer] = ConsumerCatalog.consumers.get(1L)
     oc.isDefined match {
