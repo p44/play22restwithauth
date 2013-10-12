@@ -10,8 +10,8 @@
 <link rel="shortcut icon" type="image/png" href='@routes.Assets.at("images/favicon.png")'>
 <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
 <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))'></script>
-<script type='text/javascript' src='@routes.Assets.at("javascripts/app.min.js")'></script>
-<script type='text/javascript' src='@routes.Assets.at("javascripts/services.min.js")'></script>
+<script type='text/javascript' src='@routes.Assets.at("javascripts/app.js")'></script>
+<script type='text/javascript' src='@routes.Assets.at("javascripts/services.js")'></script>
 <script type='text/javascript' src='@routes.Assets.at("javascripts/controllers.js")'></script>
 </head>
 
@@ -38,8 +38,10 @@
 			<div class="span12">
 				<div ng-controller="ConsumerCtrl">
 					<div id="header"></div>
-
-					
+					<p>{{consumer_simulated.name}}</p>
+					<ul>
+					   <li><button ng-click="getSimulatedConsumer()">Get Consumer</button></li>
+					</ul>
 
 					<div id="footer"></div>
 				</div>
