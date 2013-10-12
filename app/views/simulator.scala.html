@@ -27,26 +27,24 @@
 		</div>
 	</div>
 	
+	<div ng-controller="ConsumerCtrl">
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="span12">
-				<h2>Auth</h2>
+				<h2>{{consumer_simulated.name}}</h2>
 			</div>
 		</div>
 
 		<div class="row-fluid">
 			<div class="span12">
-				<div ng-controller="ConsumerCtrl">
-					<div id="header"></div>
-					<p>{{consumer_simulated.name}}</p>
-					<ul>
-					   <li><button ng-click="getSimulatedConsumer()">Get Consumer</button></li>
-					</ul>
-
-					<div id="footer"></div>
-				</div>
+				<div id="header"></div>
+				<ul>
+				   <li><button ng-click="x()">Todo</button></li>
+				</ul>
+				<div id="footer"></div>
 		    </div>
 	    </div>
+    </div>
     </div>
     
 </body>
