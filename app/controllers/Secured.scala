@@ -7,6 +7,7 @@ import play.api.mvc.RequestHeader
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc.Security
 import play.api.mvc.Result
+import play.api.mvc.SimpleResult
 import play.api.mvc.AnyContent
 
 trait Secured {
@@ -41,6 +42,12 @@ trait Secured {
   def withBearerTokenAuth(f: => String => Request[AnyContent] => Result) = { 
     Security.Authenticated(authorizedBearerToken, onUnauthorized) { token =>
       Action(request => f(token)(request))
+    }
+  }
+  /** Action wrapper - Enforces valid bearer token in the header uses Action.async */
+  def withBearerTokenAuthAsync(f: => String => Request[AnyContent] => scala.concurrent.Future[SimpleResult]) = { 
+    Security.Authenticated(authorizedBearerToken, onUnauthorized) { token =>
+      Action.async(request => f(token)(request))
     }
   }
   /** Authorization: Basic eHZ6MWV2R ... o4OERSZHlPZw== */
