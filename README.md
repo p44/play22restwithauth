@@ -11,6 +11,7 @@ A simulator view will provide means to:
 * invalidate the bearer token (via basic auth with simulated consumer credentials)
 * add a callback url to the system (via bearer auth with the generated bearer token)
 * get the callback url (via bearer auth with the generated bearer token)
+* trigger a call from the app to the simulated callback (via bearer auth with the generated bearer token)
 
 
 About
