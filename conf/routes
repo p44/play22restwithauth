@@ -3,8 +3,8 @@
 
 GET     /                           controllers.Simulator.index
 
-GET     /customer/:id/callbackregistration       controllers.Register.getCallbackRegistration(id: Long)
-PUT     /customer/:id/callbackregistration       controllers.Register.putCallbackRegistration(id: Long)
+GET     /consumer/:id/callbackregistration       controllers.Register.getCallbackRegistration(id: Long)
+PUT     /consumer/:id/callbackregistration       controllers.Register.putCallbackRegistration(id: Long)
 
 POST    /token						controllers.OAuth2.postToken
 POST    /invalidate_token			controllers.OAuth2.postInvalidateToken
