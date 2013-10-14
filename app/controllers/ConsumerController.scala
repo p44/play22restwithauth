@@ -9,12 +9,8 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 
+/** Rest support for the Consumer obj, simulated, GET only */
 object ConsumerController extends Controller {
-  
-  /** Quick, easy and unsecure way of creating a new consumer for the purposes of round trip */
-  def postConsumer = Action { 
-    Ok("Not Implemented")
-  }
   
   /** Get the already created simulated consumer for simulation purposes - no security */
   def getConsumerSimulated = Action {
