@@ -88,7 +88,7 @@ controller('ConsumerCtrl', function ($scope, $http, consumerModel) {
 	}
 	
 	$scope.putAlarm = function() {
-		var pUrl = '/alarm/'+ $scope.consumer_simulated.id;
+		var pUrl = '/consumer/'+ $scope.consumer_simulated.id + '/alarm';
 		$http({method: 'PUT', url: pUrl,
 			headers: {'Authorization': 'bearer ' + $scope.consumer_simulated_token.access_token, 'Content-Type': 'application/json'},
 			data: {'consumerId': $scope.consumer_simulated.id, 'level': 'emergency'}}).
