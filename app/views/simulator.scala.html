@@ -32,15 +32,17 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<h2>{{consumer_simulated.name}}</h2>
+				<p>Fetched: {{consumer_simulated_fetched.id}} {{consumer_simulated_fetched.name}}</p>
+				<p>Token: {{consumer_simulated_token.token_type}} = {{consumer_simulated_token.access_token}}</p>
 			</div>
 		</div>
 
 		<div class="row-fluid">
 			<div class="span12">
 				<div id="header"></div>
-				<ul>
-				   <li><button ng-click="x()">Todo</button></li>
-				</ul>
+				<p><button ng-click="getConsumerSimulated()">Get Simulated Consumer</button></p>
+				<p><button ng-click="postToken()">New Token</button></p>
+				<p><button ng-click="invalidateToken()">Invalidate Token</button></p>
 				<div id="footer"></div>
 		    </div>
 	    </div>
