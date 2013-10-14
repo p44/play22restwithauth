@@ -16,21 +16,23 @@ trait Secured {
   def onUnauthorized(request: RequestHeader) = Unauthorized("Authorization Failure")
   def authorizedBearerToken(request: RequestHeader): Option[String] = {
     val os = request.headers.get(AUTHORIZATION_KEY)
+    play.api.Logger.debug("authorizedBearerToken os " + os)
     os.isDefined match {
       case false => None
       case true => {
         val ot: Option[String] = SecurityHelper.parseBearerToken(os.get)
-        ConsumerCatalog.authenticateToken(ot.getOrElse("NotAToken"))
+        ConsumerCatalog.authorizeToken(ot.getOrElse("NotAToken"))
       }
     }
   }
   def authorizedConsumerCredential(request: RequestHeader): Option[String] = {
     val os = request.headers.get(AUTHORIZATION_KEY)
+    play.api.Logger.debug("authorizedConsumerCredential os " + os)
     os.isDefined match {
       case false => None
       case true => {
         val oCred: Option[String] = SecurityHelper.parseBasicToken(os.get)
-        ConsumerCatalog.authenticateConsumerCredential(oCred.getOrElse("NotACredential"))
+        ConsumerCatalog.authorizeConsumerCredential(oCred.getOrElse("NotACredential"))
       }
     }
   }
