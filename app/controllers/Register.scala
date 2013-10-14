@@ -19,7 +19,7 @@ object Register extends Controller with Secured {
 
   /**
    * GET the customer's callback configuration.
-   *  id is the customer id.
+   *  id is the consumer id.
    */
   def getCallbackRegistration(id: Long) = withBearerTokenAuthAsync { t =>
     request =>
@@ -42,7 +42,7 @@ object Register extends Controller with Secured {
 
   /**
    * PUT the customer's callback configuration.
-   *  id is the customer id.
+   *  id is the consumer id.
    *
    *  data expected
    *  {"consumerId":99,"url":"https://notaurl99.net/mycallback"}
