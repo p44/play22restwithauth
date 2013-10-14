@@ -1,9 +1,9 @@
 Play 22 Rest With Auth
 =============
 
-A sample reactive Play 2.2 REST application with Authentication
+A sample Play 2.2 REST application with Authentication
 
-The Authorization is OAuth2 simple bearer token for app to app authorization.
+The Authorization is OAuth2 simple bearer token for app to app consumer.
 
 A simulator view will provide means to:
 
@@ -31,12 +31,6 @@ This sample uses
 * AngularJs 1.1       http://angularjs.org/
 
 
-Misc
---------------
-
-* Pretty good read on Play Actions and Async  https://groups.google.com/forum/#!topic/play-framework-dev/30MqnKDp0Fs
-
-
 Auth
 --------------
 
@@ -45,3 +39,8 @@ Auth
 * Twitter's implementation is the model for this example
 * https://dev.twitter.com/docs/auth/application-only-auth
 
+
+Misc
+--------------
+
+* Pretty good read on Play Actions and Async  https://groups.google.com/forum/#!topic/play-framework-dev/30MqnKDp0Fs

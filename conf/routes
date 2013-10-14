@@ -10,7 +10,7 @@ POST    /token						controllers.OAuth2.postToken
 POST    /invalidate_token			controllers.OAuth2.postInvalidateToken
 
 GET     /consumer/simulated			controllers.ConsumerController.getConsumerSimulated
-PUT     /consumer/:id/alarm		controllers.AlarmController.putAlarm(id: Long)
+PUT     /consumer/:id/alarm			controllers.AlarmController.putAlarm(id: Long)
 
 PUT     /simulator/callback/alarm	controllers.Simulator.putAlarm
 GET     /simulator/feed/livestatus	controllers.Simulator.liveStatusFeedAll
@@ -18,3 +18,4 @@ GET     /simulator/feed/livestatus	controllers.Simulator.liveStatusFeedAll
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
+
