@@ -13,23 +13,26 @@ trait JsonParsable[T] {
   def fromJsValue(j: JsValue): Option[T]
 }
 
-case class Callback(customerId: Long, url: String) {}
+/** {"consumerId":99,"url":"https://notaurl99.net/mycallback/response"} */
+case class Callback(consumerId: Long, url: String) {}
 object Callback extends JsonParsable[Callback] {
   implicit val jWriter = Json.writes[Callback] // Json.toJson(obj): JsValue
   implicit val jReader = Json.reads[Callback] // Json.fromJson[Callback](jsval): JsResult[Callback] .asOpt Option[Callback]
   
+  val empty: Callback = Callback(0L, "")
+  
   /** explicit conversion using Json.obj */
   def toJsValue(obj: Callback): JsValue = {
     Json.obj(
-      "id" -> JsNumber(obj.customerId),
+      "consumerId" -> JsNumber(obj.consumerId),
       "url" -> obj.url)
   }
   /** explicit parsing from JsValue */
   def fromJsValue(j: JsValue): Option[Callback] = {
-    val id: JsValue = j \ "id"
+    val consumerId: JsValue = j \ "consumerId"
     val url: JsValue = j \ "url"
     try {
-      val r = Callback(id.as[Long], url.as[String])
+      val r = Callback(consumerId.as[Long], url.as[String])
       Some(r)
     } catch {
       case e: play.api.libs.json.JsResultException => None
@@ -39,11 +42,11 @@ object Callback extends JsonParsable[Callback] {
 
 /** the database */
 object CallbackCatalog {
-  val catalog = scala.collection.mutable.Map((0L -> "None"))
+  val catalog: scala.collection.mutable.Map[Long, Option[Callback]] = scala.collection.mutable.Map((0L -> None))
   
   /** */
   def saveCallback(callback: Callback) = {
-    catalog.put(callback.customerId, callback.url)
+    catalog.put(callback.consumerId, Some(callback))
   }
 }
 
