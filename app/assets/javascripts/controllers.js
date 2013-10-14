@@ -8,6 +8,8 @@ controller('ConsumerCtrl', function ($scope, $http, consumerModel) {
 	$scope.consumer_simulated_token = JSON.parse('{"token_type":"bearer","access_token":"none"}');
 	$scope.consumer_simulated_cred = 'Basic vcncb4TTuPPTEGLOSKIex:L9yyTYyQg9ieKLOPhWolMNVvKUUw8iE7777777yOg';
 	$scope.consumer_simulated_callback_url = 'none';
+	$scope.simulator_callback_url = 'http://localhost:9000/simulator/callback/alarm';
+	$scope.callback_msgs = [];
 	
 	$scope.getConsumerSimulated = function() {
        var url = '/consumer/simulated';
@@ -74,7 +76,7 @@ controller('ConsumerCtrl', function ($scope, $http, consumerModel) {
 		var pUrl = '/consumer/'+ $scope.consumer_simulated.id + '/callbackregistration';
 		$http({method: 'PUT', url: pUrl,
 			headers: {'Authorization': 'bearer ' + $scope.consumer_simulated_token.access_token, 'Content-Type': 'application/json'},
-			data: {'consumerId': $scope.consumer_simulated.id, 'url': 'http://notaurl99.net/mycallback/response'}}).
+			data: {'consumerId': $scope.consumer_simulated.id, 'url': $scope.simulator_callback_url}}).
 		success(function(data, status, headers, config) {
 			console.log(pUrl);
 			console.log(data);
@@ -84,4 +86,35 @@ controller('ConsumerCtrl', function ($scope, $http, consumerModel) {
 			console.log('PUT ' + pUrl + ' ERROR ' + status)
 		});	
 	}
+	
+	$scope.putAlarm = function() {
+		var pUrl = '/alarm/'+ $scope.consumer_simulated.id;
+		$http({method: 'PUT', url: pUrl,
+			headers: {'Authorization': 'bearer ' + $scope.consumer_simulated_token.access_token, 'Content-Type': 'application/json'},
+			data: {'consumerId': $scope.consumer_simulated.id, 'level': 'emergency'}}).
+		success(function(data, status, headers, config) {
+			console.log(pUrl);
+			console.log(data);
+		}).
+		error(function(data, status, headers, config) {
+			console.log('PUT ' + pUrl + ' ERROR ' + status)
+		});
+	}
+	
+	
+	/** handle incoming callback alarms: add to callback_msgs array */
+    $scope.addMsg = function (msg) { 
+    	var msgobj = JSON.parse(msg.data);
+    	console.log(msgobj);
+        $scope.$apply(function () { $scope.callback_msgs.push(msgobj); });
+    };
+	
+	/** start listening on callback_msgs (alarms) */
+    $scope.listen = function () {
+    	$scope.callbackfeed = new EventSource("/simulator/feed/livestatus"); 
+        $scope.callbackfeed.addEventListener("message", $scope.addMsg, false);
+    };
+
+    $scope.listen();
+	
 });
