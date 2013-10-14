@@ -9,7 +9,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 
-object Register extends Controller {
+object Register extends Controller with Secured {
 
   /** GET / */
   def index = Action.async {
@@ -21,38 +21,43 @@ object Register extends Controller {
    * GET the customer's callback configuration.
    *  id is the customer id.
    */
-  def getCallbackRegistration(id: Long) = Action.async { request =>
-    val f: Future[Option[String]] = Future {
-      val ocb = CallbackCatalog.catalog.get(id)
-      ocb.isDefined match {
-        case false => None
-        case _ => {
-          val j: JsValue = Json.toJson(ocb.get)
-          Some(Json.stringify(j))
+  def getCallbackRegistration(id: Long) = withBearerTokenAuthAsync { t =>
+    request =>
+      val f: Future[Option[String]] = Future {
+        val ocb: Option[Callback] = CallbackCatalog.catalog.get(id).getOrElse(None)
+        ocb.isDefined match {
+          case false => None
+          case _ => {
+            val j: JsValue = Json.toJson(ocb.get) // {"consumerId":99,"url":"https://notaurl99.net/mycallback/response"}
+            Some(Json.stringify(j))
+          }
         }
       }
-    }
-    f.map(os =>
-      os.isDefined match {
-        case true => Ok(os.get)
-        case _ => Ok("None Found for " + id)
-      })
+      f.map(os =>
+        os.isDefined match {
+          case true => Ok(os.get)
+          case _ => Ok("No Callback found for consumer id " + id)
+        })
   }
 
   /**
    * PUT the customer's callback configuration.
    *  id is the customer id.
+   *
+   *  data expected
+   *  {"consumerId":99,"url":"https://notaurl99.net/mycallback"}
    */
-  def putCallbackRegistration(id: Long) = Action.async { request =>
-    val f: Future[(Boolean, String)] = Future { updateCallbackRegistration(id, request) }
-    f.map { bs =>
-      {
-        bs._1 match {
-          case true => Ok(bs._2)
-          case _ => BadRequest(bs._2)
+  def putCallbackRegistration(id: Long) = withBearerTokenAuthAsync { t =>
+    request =>
+      val f: Future[(Boolean, String)] = Future { updateCallbackRegistration(id, request) }
+      f.map { bs =>
+        {
+          bs._1 match {
+            case true => Ok(bs._2)
+            case _ => BadRequest(bs._2)
+          }
         }
       }
-    }
   }
 
   /**
@@ -65,9 +70,14 @@ object Register extends Controller {
       case None => { (false, "Could not resolve request body as json.  Do you have the 'Content-type' header set to 'application/json'? " + request.body) }
       case _ => {
         try {
-          val callback: Callback = resolveCallback(jsonBody.get)
-          CallbackCatalog.saveCallback(callback)
-          (true, Json.stringify(jsonBody.get))
+          val oCallback: Option[Callback] = resolveCallback(jsonBody.get)
+          oCallback.isDefined match {
+            case false => (false, "Could not reconcile the structure of the json data provided in the request. Please see api documentation. " + jsonBody.get)
+            case _ => {
+              CallbackCatalog.saveCallback(oCallback.get)
+              (true, Json.stringify(jsonBody.get)) // send the same json from the body back
+            }
+          }
         } catch {
           case e: Exception => (false, e.getMessage)
         }
@@ -76,11 +86,8 @@ object Register extends Controller {
   }
 
   /** */
-  def resolveCallback(j: JsValue): Callback = {
-    val id: Long = (j \ "id").as[Long]
-    val url: String = (j \ "url").as[String]
-    val r: Callback = new Callback(id, url)
-    r
+  def resolveCallback(j: JsValue): Option[Callback] = {
+    Json.fromJson[Callback](j).asOpt
   }
 
 }
