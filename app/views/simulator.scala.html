@@ -46,8 +46,15 @@
 				<p><button ng-click="invalidateToken()">Invalidate Token</button></p>
 				<p><button ng-click="putCallbackRegistration()">Put Callback Registration</button></p>
 				<p><button ng-click="getCallbackRegistration()">Get Callback Registration</button></p>
+				<p><button ng-click="putAlarm()">Trigger the Callback</button></p>
 				<div id="footer"></div>
 		    </div>
+		    <br/>
+		    <div id="callbacks-out">
+				<div class="msg" ng-repeat="msg in callback_msgs | limitTo:-5">
+					<strong>{{msg.consumerId}} "{{msg.level}}"</strong><br/>
+				</div>
+			</div>
 	    </div>
     </div>
     </div>
